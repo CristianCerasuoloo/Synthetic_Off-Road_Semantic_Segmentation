@@ -116,6 +116,9 @@ def train_net(args):
         args.onGPU = True
         model = model.cuda()
         cudnn.benchmark = True
+    else: 
+        args.onGPU = False
+        model = model.cpu()
 
     total_paramters = netParams(model)
     print('Total network parameters: ' + str(total_paramters))
@@ -240,4 +243,6 @@ if __name__ == '__main__':
     parser.add_argument('--freeze_encoder', default=0, help='Freeze the encoder weights')
     parser.add_argument('--deepscene', default=0, help='Enable deepscene dataset')
     
+    print(parser.parse_args())
+
     train_net(parser.parse_args())
