@@ -32,10 +32,8 @@ def unpack_video(video_path, output_dir):
     cap.release()
 
 if __name__ == "__main__":
-    # video_folder = "/Users/cristiancerasuolo/Library/CloudStorage/GoogleDrive-c.cerasuolo2@studenti.unisa.it/Il mio Drive/Magistrale/Tesi/Video Scenari/Bozza3/Bozza3/AVI"
-    # output_dir = "/Users/cristiancerasuolo/Library/CloudStorage/GoogleDrive-c.cerasuolo2@studenti.unisa.it/Il mio Drive/Magistrale/Tesi/Video Scenari/Bozza3/Bozza3/Frames"
-    video_folder = "/Users/cristiancerasuolo/Desktop/Bozza4/Video"
-    output_dir = "/Users/cristiancerasuolo/Desktop/Bozza4/Frames"
+    video_folder = "/Users/cristiancerasuolo/Desktop/DatasetFantoccio/train/video"
+    output_dir = "/Users/cristiancerasuolo/Desktop/DatasetFantoccio/train"
 
 
     for video_file in tqdm.tqdm(os.listdir(video_folder)):
