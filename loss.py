@@ -56,7 +56,9 @@ class TotalLoss(nn.Module):
         out_da=outputs
 
         _,seg_da= torch.max(seg_da, 1)
-        seg_da=seg_da.cuda()
+
+        if torch.cuda.is_available():
+            seg_da=seg_da.cuda()
 
 
 
