@@ -155,6 +155,7 @@ class MyDataset(torch.utils.data.Dataset):
             self.root_depth=os.path.join(self.train_path, self.depth_folder_name)
             self.names=os.listdir(self.root)
 
+
     def __len__(self):
         return len(self.names)
 
@@ -310,12 +311,18 @@ class MyDataset(torch.utils.data.Dataset):
             image = image / 65535.0
             image = np.ascontiguousarray(image)
 
-
-
-       
         return image_name,torch.from_numpy(image),seg_da
     
-    
+    def label_synthoffroad(self, image_name, image):
+        if self.depth or self.sensor_fusion:
+            raise ValueError("Depth not implemented for SyntOffRoad")    
+        
+        label_path = image_name.replace(self.rgb_folder_name, self.label_folder_name)
+        label_image = cv2.imread(label_path)
+
+        return label_image        
+
+
 
     def label_ORFD(self, image_name, image):
         if self.depth or self.sensor_fusion:
