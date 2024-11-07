@@ -94,22 +94,18 @@ def train_net(args):
         os.mkdir(args.savedir)
 
     trainLoader = torch.utils.data.DataLoader(
-        myDataLoader.MyDataset(train_path = args.train_path, valid=False,
+        myDataLoader.SynthOffRoadDataset(train_path = args.train_path, valid=False,
                                 rgb_folder_name=args.rgb_folder_name,
-                                depth_folder_name=args.depth_folder_name,
                                 label_folder_name=args.label_folder_name,
-                                sensor_fusion=args.sensor_fusion,
-                                label=args.label, width=args.width, height=args.height,
-                                with_agumentation=args.with_agumentation,depth=args.depth, deepscene=args.deepscene), 
+                                width=args.width, height=args.height,
+                                with_augmentation=args.with_augmentation, deepscene=args.deepscene), 
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True)
 
     valLoader = torch.utils.data.DataLoader(
-        myDataLoader.MyDataset(valid_path = args.valid_path, valid=True,
+        myDataLoader.SynthOffRoadDataset(valid_path = args.valid_path, valid=True,
                                 rgb_folder_name=args.rgb_folder_name,
-                                depth_folder_name=args.depth_folder_name,
                                 label_folder_name=args.label_folder_name,
-                                sensor_fusion=args.sensor_fusion,
-                                label=args.label, width=args.width, height=args.height, depth=args.depth, deepscene=args.deepscene),
+                                width=args.width, height=args.height, deepscene=args.deepscene),
         batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
     if cuda_available:
@@ -226,23 +222,27 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained', help='Pretrained ESPNetv2 weights.')
     parser.add_argument('--train_path', required=True, help='Path to the training dataset')
     parser.add_argument('--valid_path', required=True, help='Path to the validation dataset')
-    parser.add_argument('--label', default="BDD100K", help='select the label type to use')
-    parser.add_argument('--sensor_fusion', default=0, help='Enable sensor fusion')
+    # parser.add_argument('--label', default="BDD100K", help='select the label type to use')
+    parser.add_argument('--label', default="SynthOffRoad", help='select the label type to use') # Useless
+    # parser.add_argument('--sensor_fusion', default=0, help='Enable sensor fusion') # Useless
+    parser.add_argument('--sensor_fusion', action="store_true", help='Enable sensor fusion', default=False) # Useless
     parser.add_argument('--rgb_folder_name', default="color", help='Folder name for RGB images')
     parser.add_argument('--label_folder_name', default="labels", help='Folder name for label images')
-    parser.add_argument('--depth_folder_name', default="depth", help='Folder name for depth images')
+    parser.add_argument('--depth_folder_name', default="depth", help='Folder name for depth images') # Useless
     parser.add_argument('--width', type=int, default=640, help='Width of the input image')
     parser.add_argument('--height', type=int, default=360, help='Height of the input image')
-    parser.add_argument('--with_agumentation', default=0, help='Enable data augmentation')
+    # parser.add_argument('--with_augmentation', default=0, help='Enable data augmentation')
+    parser.add_argument('--with_augmentation', action="store_true", help='Enable data augmentation', default=False)
     parser.add_argument('--patience', type=int, default=10, help='Number of epochs with no improvement after which training will be stopped')
-    parser.add_argument('--depth', default=0, help='Enable depth images')
-    parser.add_argument('--adaptive', default=0, help='Enable adaptive fusion')
+    # parser.add_argument('--depth', default=0, help='Enable depth images') # Useless
+    parser.add_argument('--depth', action="store_true", help='Enable depth images', default=False) # Useless
+    # parser.add_argument('--adaptive', default=0, help='Enable adaptive fusion') # Useless
+    parser.add_argument('--adaptive', action="store_true", help='Enable adaptive fusion', default=False) # Useless
     #add the encoder depth pretrained weights
     parser.add_argument('--encoder_pretrained_depth', help='Pretrained ESPNetv2 weights for depth encoder.')
     parser.add_argument('--encoder_pretrained_rgb', help='Pretrained ESPNetv2 weights for rgb encoder.')
-    parser.add_argument('--freeze_encoder', default=0, help='Freeze the encoder weights')
+    # parser.add_argument('--freeze_encoder', default=0, help='Freeze the encoder weights')
+    parser.add_argument('--freeze_encoder', action="store_true", help='Freeze the encoder weights', default=False)
     parser.add_argument('--deepscene', default=0, help='Enable deepscene dataset')
     
-    print(parser.parse_args())
-
     train_net(parser.parse_args())

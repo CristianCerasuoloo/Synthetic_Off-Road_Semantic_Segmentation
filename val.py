@@ -30,7 +30,7 @@ def validation(args):
     else:
         print("Using only RGB ")
         model = net.TwinLiteNet()
-    cuda_available = torch.cuda.is_available()
+    cuda_available = torch.cuda.is_available() and args.device == 'cuda'
     if cuda_available:
         model = torch.nn.DataParallel(model)
         model = model.cuda()
@@ -40,12 +40,10 @@ def validation(args):
         
     #print('Validation loader ...')
     valLoader = torch.utils.data.DataLoader(
-        myDataLoader.MyDataset(test_path = args.test_path, test=True,\
+        myDataLoader.SynthOffRoadDataset(test_path = args.test_path, test=True,\
                                 rgb_folder_name=args.rgb_folder_name, \
-                                depth_folder_name=args.depth_folder_name, \
                                 label_folder_name=args.label_folder_name, \
-                                sensor_fusion=args.sensor_fusion,\
-                                label=args.label, width=args.width, height=args.height, depth=args.depth, deepscene=args.deepscene),
+                                width=args.width, height=args.height, deepscene=args.deepscene),
         batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
     #print('Validation loader ready')
     total_paramters = netParams(model)
@@ -53,8 +51,7 @@ def validation(args):
     
     #model.load_state_dict(torch.load(args.weight))
     
-
-    checkpoint = torch.load( args.weight) # change the model
+    checkpoint = torch.load( args.weight, map_location= args.device) # change the model
     checkpoint2 = {}
     for key in checkpoint:
         if key.startswith("module."):
@@ -63,19 +60,19 @@ def validation(args):
             checkpoint2["module."+key] = checkpoint[key]
     #save pretrained model without lane detection
     
-    model.load_state_dict(checkpoint2)
+    model.load_state_dict(checkpoint)
     model.eval()
     
     
     if args.sensor_fusion:
-        example_rgb = torch.rand(1, 3, 360, 640).cuda()
-        example_depth = torch.rand(1, 3, 360, 640).cuda()
+        example_rgb = torch.rand(1, 3, 360, 640).to(torch.device(args.device))
+        example_depth = torch.rand(1, 3, 360, 640).to(torch.device(args.device))
         model = torch.jit.trace(model, (example_rgb, example_depth))
         da_segment_results, da_segment_result_OFFNET, val_loss = val_sensor_fusion(valLoader, model, criteria)
     else:
-        example = torch.rand(1, 3, 360, 640).cuda()
+        example = torch.rand(1, 3, 360, 640).to(torch.device(args.device))
         model = torch.jit.trace(model, example)
-        da_segment_results, da_segment_result_OFFNET, val_loss = val(valLoader, model, criteria)
+        da_segment_results, da_segment_result_OFFNET, val_loss = val(valLoader, model, criteria, args.device)
         
     msg =  'Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})  Val_Loss({val_loss:.3f})'.format(
                           da_seg_acc=da_segment_results[0],da_seg_iou=da_segment_results[1],da_seg_miou=da_segment_results[2], val_loss=val_loss)
@@ -91,15 +88,20 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=1, help='Batch size. 12 for ESPNet-C and 6 for ESPNet. '
                                                                    'Change as per the GPU memory')
     parser.add_argument('--test_path', required=True, help='Path to the test dataset')
-    parser.add_argument('--label', default="BDD100K", help='select the label type to use')
-    parser.add_argument('--sensor_fusion', default=0, help='Enable sensor fusion')
+    parser.add_argument('--label', default="SynthOffRoad", help='select the label type to use')
+    # parser.add_argument('--sensor_fusion', default=0, help='Enable sensor fusion') # Useless
+    parser.add_argument('--sensor_fusion', action='store_true', help='Enable sensor fusion') # Useless
     parser.add_argument('--rgb_folder_name', default="color", help='Folder name for RGB images')
     parser.add_argument('--label_folder_name', default="labels", help='Folder name for label images')
-    parser.add_argument('--depth_folder_name', default="depth", help='Folder name for depth images')
+    parser.add_argument('--depth_folder_name', default="depth", help='Folder name for depth images') # Useless
     parser.add_argument('--width', type=int, default=640, help='Width of the input image')
     parser.add_argument('--height', type=int, default=360, help='Height of the input image')
-    parser.add_argument('--depth', default=0, help='Enable depth estimation')
-    parser.add_argument('--adaptive', default=0, help='Enable adaptive fusion')
-    parser.add_argument('--deepscene', default=0, help='Enable deepscene dataset')
+    # parser.add_argument('--depth', default=0, help='Enable depth estimation') # Useless
+    parser.add_argument('--depth', action='store_true', help='Enable depth estimation') # Useless
+    # parser.add_argument('--adaptive', default=0, help='Enable adaptive fusion') # Useless
+    parser.add_argument('--adaptive', action='store_true', help='Enable adaptive fusion') # Useless
+    # parser.add_argument('--deepscene', default=0, help='Enable deepscene dataset') # Useless
+    parser.add_argument('--deepscene', action='store_true', help='Enable deepscene dataset') # Useless
+    parser.add_argument('--device', default='cuda', help='Device to use')
     
     validation(parser.parse_args())

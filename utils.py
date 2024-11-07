@@ -274,7 +274,7 @@ def val_sensor_fusion(val_loader, model, criterion):
 
 
 @torch.no_grad()
-def val(val_loader, model, criterion):
+def val(val_loader, model, criterion, device):
     model.eval()
 
     DA = SegmentationMetric(2)
@@ -291,7 +291,7 @@ def val(val_loader, model, criterion):
 
     for i, (_, input, target) in pbar:
         
-        input = input.cuda().float()
+        input = input.to(torch.device(device)).float()
 
         # run the model
         output = model(input)
