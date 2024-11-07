@@ -82,17 +82,18 @@ An extended model incorporating late fusion for multi-modal data has been develo
 To train the model, execute the above command. The training script supports various configurations through command-line arguments. 
 ```
 python3 train.py --max_epochs 300 --batch_size 16 --lr 5e-4 --savedir results --train_path /path/to/train --valid_path /path/to/valid --sensor_fusion 1 --depth 1 --adaptive 1
+(OUT-OF-DATE)
 ```
 
 Example command to start training with sensor fusion enabled:
 
 ```bash
-- `--freeze_encoder`: Freeze the encoder weights (0 or 1).
+- `--freeze_encoder`: Freeze the encoder weights.
 - `--encoder_pretrained_rgb`: Path to pretrained weights for the RGB encoder.
 - `--encoder_pretrained_depth`: Path to pretrained weights for the depth encoder.
-- `--adaptive`: Enable adaptive fusion (0 or 1).
-- `--depth`: Enable depth images (0 or 1).
-- `--sensor_fusion`: Enable sensor fusion (0 or 1).
+- `--adaptive`: Enable adaptive fusion.
+- `--depth`: Enable depth images.
+- `--sensor_fusion`: Enable sensor fusion.
 - `--valid_path`: Path to the validation dataset.
 - `--train_path`: Path to the training dataset.
 - `--savedir`: Directory to save the results and checkpoints.
@@ -106,7 +107,7 @@ Example command to start training with sensor fusion enabled:
 To validate the model, execute the following command. The validation script supports various configurations through command-line arguments.
 
 ```bash
-python3 val.py --weight pretrained/best1.pth --test_path /path/to/test --num_workers 1 --batch_size 1 --label BDD100K --sensor_fusion 0 --rgb_folder_name color --label_folder_name labels --depth_folder_name depth --width 640 --height 360 --depth 0 --adaptive 0 --deepscene 0 
+python3 val.py --weight pretrained/best1.pth --test_path /path/to/test --num_workers 1 --batch_size 1 --label BDD100K --sensor_fusion 0 --rgb_folder_name color --label_folder_name labels --depth_folder_name depth --width 640 --height 360 --depth 0 --adaptive 0 --deepscene 0 (OUT-OF-DATE)
 ```
 
 Command-line Arguments:
@@ -115,16 +116,16 @@ Command-line Arguments:
 --num_workers: Number of parallel threads (default: 1).
 --batch_size: Batch size (default: 1).
 --test_path: Path to the test dataset (required).
---label: Select the label type to use (default: "BDD100K").
---sensor_fusion: Enable sensor fusion (0 or 1, default: 0).
+--label: Select the label type to use (default: "SynthOffRoad").
+--sensor_fusion: Enable sensor fusion 
 --rgb_folder_name: Folder name for RGB images (default: "color").
 --label_folder_name: Folder name for label images (default: "labels").
 --depth_folder_name: Folder name for depth images (default: "depth").
 --width: Width of the input image (default: 640).
 --height: Height of the input image (default: 360).
---depth: Enable depth estimation (0 or 1, default: 0).
---adaptive: Enable adaptive fusion (0 or 1, default: 0).
---deepscene: Enable deepscene dataset (0 or 1, default: 0).
+--depth: Enable depth estimation 
+--adaptive: Enable adaptive fusion 
+--deepscene: Enable deepscene dataset 
 ```
 
 ### Demo Inference 
@@ -146,3 +147,6 @@ python3 demo_inference.py
 
 
  
+## Cristian Finetuning
+
+ python3 train.py --max_epochs 1 --batch_size 1 --lr 5e-4 --savedir results --train_path /Users/cristiancerasuolo/Desktop/SynthOffRoad/train --valid_path /Users/cristiancerasuolo/Desktop/SynthOffRoad/train --rgb_folder_name images --label_folder_name GT
