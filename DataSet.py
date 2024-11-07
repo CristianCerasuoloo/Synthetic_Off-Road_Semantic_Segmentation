@@ -6,6 +6,7 @@ import numpy as np
 import os
 import random
 import math
+import glob
 
 def augment_hsv(img, hgain=0.015, sgain=0.7, vgain=0.4):
     """change color hue, saturation, value"""
@@ -104,7 +105,7 @@ class MyDataset(torch.utils.data.Dataset):
     '''
     def __init__(self,train_path = None, valid_path = None, test_path= None, rgb_folder_name = "color",\
                 label_folder_name = "labels", depth_folder_name = "depth", transform=None,valid=False, test=False,\
-                sensor_fusion = False, label = "BDD100K", width=640, height=360, with_agumentation = False, depth = False, deepscene = False):
+                sensor_fusion = False, label = "BDD100K", width=640, height=360, with_augmentation = False, depth = False, deepscene = False):
         """
         Args:
             train_path (str): Path to the training dataset.
@@ -134,7 +135,7 @@ class MyDataset(torch.utils.data.Dataset):
         self.sensor_fusion = sensor_fusion
         self.depth = depth
         self.label = label
-        self.with_agumentation = with_agumentation
+        self.with_augmentation = with_augmentation
         self.deepscene = deepscene
         if test:
             if self.test_path is None:
@@ -154,7 +155,6 @@ class MyDataset(torch.utils.data.Dataset):
             self.root=os.path.join(self.train_path, self.rgb_folder_name)
             self.root_depth=os.path.join(self.train_path, self.depth_folder_name)
             self.names=os.listdir(self.root)
-
 
     def __len__(self):
         return len(self.names)
@@ -185,7 +185,7 @@ class MyDataset(torch.utils.data.Dataset):
                 raise ValueError(f"Label method {label_method_name} does not exist.")
 
             # Apply augmentations only to RGB image and label
-            if self.with_agumentation and not (self.valid or self.test):
+            if self.with_augmentation and not (self.valid or self.test):
                 if random.random() < 0.5:
                     combination = (image,image_depth, label1)
                     (image,image_depth, label1) = random_perspective(
@@ -252,6 +252,8 @@ class MyDataset(torch.utils.data.Dataset):
                 raise ValueError("Depth not implemented for ORFD")
         else:
             image_name=os.path.join(self.root,self.names[idx])
+
+            print("DEBUG: ", image_name)
             image = cv2.imread(image_name)
         
         label_method_name = f"label_{self.label}"
@@ -261,7 +263,7 @@ class MyDataset(torch.utils.data.Dataset):
             raise ValueError(f"Label method {label_method_name} does not exist.")
 
         # Apply augmentations only to RGB image and label
-        if self.with_agumentation and not (self.valid or self.test):
+        if self.with_augmentation and not (self.valid or self.test):
             
             if random.random() < 0.5:
                 combination = (image, label1)
@@ -322,8 +324,6 @@ class MyDataset(torch.utils.data.Dataset):
 
         return label_image        
 
-
-
     def label_ORFD(self, image_name, image):
         if self.depth or self.sensor_fusion:
             #Not implemented  for ORFD exception
@@ -365,5 +365,118 @@ class MyDataset(torch.utils.data.Dataset):
         # label1[label_image[:,:,2] > 200] = 1
         label1 = cv2.imread(label_path, 0)
         return label1
+
+class SynthOffRoadDataset(torch.utils.data.Dataset):
+    '''
+        Class to load the dataset
+    '''
+    def __init__(self,train_path = None, valid_path = None, test_path= None, rgb_folder_name = "images",\
+                label_folder_name = "GT", transform=None,valid=False, test=False, \
+                    width=640, height=360, with_augmentation = False, deepscene = False):
+        """
+        Args:
+            train_path (str): Path to the training dataset.
+            valid_path (str): Path to the validation dataset.
+            test_path (str): Path to the test dataset.
+            rgb_folder_name (str): Folder name for RGB images.
+            label_folder_name (str): Folder name for label images.
+            transform (callable, optional): Optional transform to be applied on a sample.
+            valid (bool): Flag to indicate validation mode.
+            test (bool): Flag to indicate test mode.
+            label (str): Type of label processing to use.
+        """
+        self.width = width
+        self.height = height
+        self.transform = transform
+        self.Tensor = transforms.ToTensor()
+        self.valid=valid
+        self.test=test
+        self.train_path = train_path
+        self.valid_path = valid_path
+        self.test_path = test_path
+        self.rgb_folder_name = rgb_folder_name
+        self.label_folder_name = label_folder_name
+        self.with_augmentation = with_augmentation
+        self.deepscene = deepscene
+        if test:
+            if self.test_path is None:
+                raise ValueError("Test path not provided.")
+            self.root=os.path.join(self.test_path, self.rgb_folder_name)
+        elif valid:
+            if self.valid_path is None:
+                raise ValueError("Validation path not provided.")
+            self.root=os.path.join(self.valid_path, self.rgb_folder_name)
+        else:
+            if self.train_path is None:
+                raise ValueError("Train path not provided.")
+            self.root=os.path.join(self.train_path, self.rgb_folder_name)
+        
+        # Collect all the paths under root
+        self.frames = []
+        for folder in os.listdir(self.root):
+            folder_path = os.path.join(self.root, folder)
+            self.frames.extend([os.path.join(folder_path, file) for file in os.listdir(folder_path)])
+        
+        # Shuffle the frames
+        random.shuffle(self.frames)
+
+        print("DEBUG:  lunghezza frames ", len(self.frames))
+
+    def __len__(self):
+        return len(self.frames)
+    
+    def __getitem__(self, idx):
+        '''
+        :param idx: Index of the image file
+        :return: returns the image and corresponding label file.
+        '''
+
+        image_name = self.frames[idx] # os.path.join(self.root,self.frames[idx])
+
+        image = cv2.imread(image_name)
+    
+        label_path = image_name.replace(self.rgb_folder_name, self.label_folder_name)
+        label1 = cv2.imread(label_path)
+
+        # Apply augmentations only to RGB image and label
+        if self.with_augmentation and not (self.valid or self.test):
+            
+            if random.random() < 0.5:
+                combination = (image, label1)
+                (image, label1) = random_perspective(
+                    combination=combination,
+                    degrees=10,
+                    translate=0.1,
+                    scale=0.25,
+                    shear=0.0,
+                    sensor_fusion=False,
+                    depth=self.depth
+                )
+            if not self.depth:
+                if random.random() < 0.5:
+                    augment_hsv(image)
+            
+            if random.random() < 0.5:
+                image = np.fliplr(image)
+                label1 = np.fliplr(label1)
+        
+        label1 = cv2.resize(label1, (self.width, self.height))
+        image = cv2.resize(image, (self.width, self.height))
+
+        _,seg_b1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY_INV)
+        _,seg1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY)
+
+        seg1 = self.Tensor(seg1)
+        seg_b1 = self.Tensor(seg_b1)
+        seg_da = torch.stack((seg_b1[0], seg1[0]),0)
+
+        image = image[:, :, ::-1].transpose(2, 0, 1)
+        #normalize image
+        image = image.astype(np.float32)
+        image = image / 255.0
+        image = np.ascontiguousarray(image)# 8bit, 0-255
+
+        return image_name,torch.from_numpy(image),seg_da
+    
 
 
