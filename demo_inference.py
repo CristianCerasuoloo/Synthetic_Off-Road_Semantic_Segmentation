@@ -151,7 +151,7 @@ class VideoProcessingGUI(QMainWindow):
     
     def select_rgb_video(self):
         self.clear()
-        self.rgb_video_path, _ = QFileDialog.getOpenFileName(self, "Select RGB Video", "", "Video Files (*.mp4 *.mkv)")
+        self.rgb_video_path, _ = QFileDialog.getOpenFileName(self, "Select RGB Video", "", "Video Files (*.mp4 *.mkv *.avi)")
         if self.rgb_video_path:
             self.rgb_video_button.setText(f"RGB Video: {self.rgb_video_path.split('/')[-1]}")
     def select_depth_video(self):
