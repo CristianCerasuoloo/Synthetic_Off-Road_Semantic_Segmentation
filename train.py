@@ -181,7 +181,7 @@ def train_net(args):
         if args.sensor_fusion:
             da_segment_results, da_segment_result_OFFNET, val_loss = val_sensor_fusion(valLoader, model, criteria)
         else:
-            da_segment_results, da_segment_result_OFFNET, val_loss = val(valLoader, model, criteria)
+            da_segment_results, da_segment_result_OFFNET, val_loss = val(valLoader, model, criteria, args.device)
         #current_miou = da_segment_results[2]  # Assuming mIOU is the third value in da_segment_results
         current_iou_tru_class = da_segment_result_OFFNET[4]
         msg = 'Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})  Val_Loss({val_loss:.3f})'.format(
