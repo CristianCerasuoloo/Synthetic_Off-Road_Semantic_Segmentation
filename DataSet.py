@@ -401,15 +401,15 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
         if test:
             if self.test_path is None:
                 raise ValueError("Test path not provided.")
-            self.root=os.path.join(self.test_path, self.rgb_folder_name)
+            self.root=self.test_path
         elif valid:
             if self.valid_path is None:
                 raise ValueError("Validation path not provided.")
-            self.root=os.path.join(self.valid_path, self.rgb_folder_name)
+            self.root=self.valid_path
         else:
             if self.train_path is None:
                 raise ValueError("Train path not provided.")
-            self.root=os.path.join(self.train_path, self.rgb_folder_name)
+            self.root=self.train_path
         
         # Collect all the paths under root
         self.frames = []
@@ -417,8 +417,8 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
             folder_path = os.path.join(self.root, folder)
             self.frames.extend([os.path.join(folder_path, file) for file in os.listdir(folder_path)])
         
-        # Shuffle the frames
-        random.shuffle(self.frames)
+        # # Shuffle the frames
+        # random.shuffle(self.frames)
 
         print("DEBUG:  lunghezza frames ", len(self.frames))
 
