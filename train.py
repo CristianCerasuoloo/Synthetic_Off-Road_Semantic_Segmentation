@@ -126,21 +126,29 @@ def train_net(args):
 
     optimizer = torch.optim.Adam(model.parameters(), lr, (0.9, 0.999), eps=1e-08, weight_decay=5e-4)
 
-    if args.resume:
-        if os.path.isfile(args.resume):
-            print("=> loading checkpoint '{}'".format(args.resume))
-            checkpoint = torch.load(args.resume, map_location=args.device)
-            try:
-                start_epoch = checkpoint['epoch']
-            except KeyError:
-                print("=> no epoch found in the checkpoint. Starting from scratch.")
-                start_epoch = 0
+    if os.path.isfile(args.resume):
+        print("=> loading checkpoint '{}'".format(args.resume))
+        checkpoint = torch.load(args.resume, map_location=args.device)
+        try:
+            start_epoch = checkpoint['epoch']
+        except KeyError:
+            print("=> no epoch found in the checkpoint. Starting from scratch.")
+            start_epoch = 0
+        try:
             model.load_state_dict(checkpoint['state_dict'])
+        except KeyError:
+            model.load_state_dict(checkpoint)
+        
+        try:
             optimizer.load_state_dict(checkpoint['optimizer'])
-            print("=> loaded checkpoint '{}' (epoch {})"
-                .format(args.resume, checkpoint['epoch']))
-        else:
-            print("=> no checkpoint found at '{}'".format(args.resume))
+        except KeyError:
+            pass
+
+        print("=> loaded checkpoint '{}' (epoch {})"
+            .format(args.resume, start_epoch))
+    else:
+        print("=> no checkpoint found at '{}'".format(args.resume))
+
 
     best_miou = 0
     patience = args.patience
