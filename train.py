@@ -129,7 +129,7 @@ def train_net(args):
     if args.resume:
         if os.path.isfile(args.resume):
             print("=> loading checkpoint '{}'".format(args.resume))
-            checkpoint = torch.load(args.resume)
+            checkpoint = torch.load(args.resume, map_location=args.device)
             start_epoch = checkpoint['epoch']
             model.load_state_dict(checkpoint['state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer'])
@@ -244,5 +244,6 @@ if __name__ == '__main__':
     # parser.add_argument('--freeze_encoder', default=0, help='Freeze the encoder weights')
     parser.add_argument('--freeze_encoder', action="store_true", help='Freeze the encoder weights', default=False)
     parser.add_argument('--deepscene', default=0, help='Enable deepscene dataset')
+    parser.add_argument('--device', default='cuda', help='Device to use for training')
     
     train_net(parser.parse_args())
