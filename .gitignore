@@ -1,6 +1,10 @@
 __pycache__
-*/__pycache__
+**/__pycache__
 model/__pycache__
 
 *.csv
 
+**/.DS_Store
+
+*.zip
+*.pth
