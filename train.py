@@ -153,8 +153,8 @@ def train_net(args):
     best_miou = 0
     patience = args.patience
     counter = 0
-    best_model_path = os.path.join(args.savedir, 'best_model.pth')
-    last_checkpoint_path = os.path.join(args.savedir, 'last_checkpoint.pth.tar')
+    # best_model_path = os.path.join(args.savedir, 'best_model.pth')
+    # last_checkpoint_path = os.path.join(args.savedir, 'last_checkpoint.pth.tar')
     # file csv were you want to save performance metrics for each epoch
     csv_file = os.path.join(args.savedir, 'metrics.csv')
     #write the header of the csv file
@@ -196,23 +196,30 @@ def train_net(args):
             f.write(f"{epoch},{da_segment_results[0]},{da_segment_results[1]},{current_iou_tru_class},{da_segment_result_OFFNET[0]},{da_segment_result_OFFNET[1]},{da_segment_result_OFFNET[2]},{da_segment_result_OFFNET[3]},{da_segment_result_OFFNET[4]},{train_loss},{val_loss}\n")
 
 
-
-        # Save the last checkpoint
-        save_checkpoint({
-            'epoch': epoch + 1,
-            'state_dict': model.state_dict(),
-            'optimizer': optimizer.state_dict(),
-            'lr': lr,
-            'best_miou': best_miou
-        }, last_checkpoint_path)
-
         # Check if this is the best model
         if current_iou_tru_class > best_miou:
             best_miou = current_iou_tru_class
             counter = 0
-            torch.save(model.state_dict(), best_model_path)
+            torch.save(model.state_dict(), os.path.join(args.savedir, f'best_model_e{epoch}.pth'))
             print(f"New best model saved with mIOU: {best_miou:.4f}")
+
+            save_checkpoint({
+                'epoch': epoch + 1,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'lr': lr,
+                'best_miou': best_miou
+            }, os.path.join(args.savedir, f'best_checkpoint_e{epoch}.pth'))
+
         else:
+            # Save the last checkpoint
+            save_checkpoint({
+                'epoch': epoch + 1,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'lr': lr,
+                'best_miou': best_miou
+            }, os.path.join(args.savedir,'last_checkpoint.pth.tar'))
             counter += 1
 
         # Early stopping
