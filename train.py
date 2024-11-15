@@ -75,15 +75,24 @@ def train_net(args):
                 print("Freezing the encoder")
                 for param in model.encoder.parameters():
                     param.requires_grad = False
-    
+                    
     if args.pretrained:
         print(f"Loading pretrained model from {args.pretrained}")
         model_path = args.pretrained
         checkpoint = torch.load(model_path)
         model.load_state_dict(checkpoint)
+
+        if args.freeze_encoder:
+            print("Freezing the encoder")
+            for param in model.encoder.parameters():
+                param.requires_grad = False
+        else:
+            print("Traning also the encoder")
+            for param in model.encoder.parameters():
+                param.requires_grad = True
     else:
         print("Training from scratch.")
-
+        
     if num_gpus > 1:
         model = torch.nn.DataParallel(model)
 
