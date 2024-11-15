@@ -1,0 +1,123 @@
+Using only RGB 
+Training from scratch.
+DEBUG:  lunghezza frames  8223
+DEBUG:  lunghezza frames  6129
+Total network parameters: 436931
+=> no checkpoint found at '/content/drive/starting points/BDD100k_originalauthors.pth'
+Learning rate: 0.0005
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        0/299      0.09779      0.06679       0.1646: 100% 257/257 [06:09<00:00,  1.44s/it]
+Epoch: [0/300]	 lr: 0.0005	 Train Loss 0.2519
+100% 192/192 [09:28<00:00,  2.96s/it]
+Driving area Segment: Acc(0.983)    IOU (0.964)    mIOU(0.967)  Val_Loss(0.182)
+Driving area Segment OFFNET metrics: Acc(0.983)    Precision (0.982)    Recall(0.981)    F1(0.982)    IoU[0](0.969) IoU[1](0.964)
+New best model saved with mIOU: 0.9642
+Learning rate: 0.00049667
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        1/299      0.06597      0.04533       0.1113: 100% 257/257 [05:56<00:00,  1.39s/it]
+Epoch: [1/300]	 lr: 0.00049667	 Train Loss 0.1375
+100% 192/192 [10:02<00:00,  3.14s/it]
+Driving area Segment: Acc(0.984)    IOU (0.966)    mIOU(0.968)  Val_Loss(0.132)
+Driving area Segment OFFNET metrics: Acc(0.984)    Precision (0.983)    Recall(0.982)    F1(0.983)    IoU[0](0.970) IoU[1](0.966)
+New best model saved with mIOU: 0.9656
+Learning rate: 0.00049336
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        2/299      0.04846      0.03035      0.07881: 100% 257/257 [05:48<00:00,  1.36s/it]
+Epoch: [2/300]	 lr: 0.00049336	 Train Loss 0.0964
+100% 192/192 [09:58<00:00,  3.12s/it]
+Driving area Segment: Acc(0.959)    IOU (0.917)    mIOU(0.921)  Val_Loss(0.132)
+Driving area Segment OFFNET metrics: Acc(0.959)    Precision (0.927)    Recall(0.989)    F1(0.957)    IoU[0](0.924) IoU[1](0.918)
+Learning rate: 0.00049005
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        3/299       0.0352      0.01939      0.05459: 100% 257/257 [05:52<00:00,  1.37s/it]
+Epoch: [3/300]	 lr: 0.00049005	 Train Loss 0.0688
+100% 192/192 [09:41<00:00,  3.03s/it]
+Driving area Segment: Acc(0.985)    IOU (0.968)    mIOU(0.970)  Val_Loss(0.074)
+Driving area Segment OFFNET metrics: Acc(0.985)    Precision (0.985)    Recall(0.982)    F1(0.984)    IoU[0](0.972) IoU[1](0.968)
+New best model saved with mIOU: 0.9677
+Learning rate: 0.00048676
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        4/299      0.02705      0.01338      0.04043: 100% 257/257 [05:54<00:00,  1.38s/it]
+Epoch: [4/300]	 lr: 0.00048676	 Train Loss 0.0504
+100% 192/192 [09:40<00:00,  3.02s/it]
+Driving area Segment: Acc(0.984)    IOU (0.966)    mIOU(0.969)  Val_Loss(0.060)
+Driving area Segment OFFNET metrics: Acc(0.984)    Precision (0.983)    Recall(0.982)    F1(0.983)    IoU[0](0.971) IoU[1](0.966)
+Learning rate: 0.00048347
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        5/299      0.02068     0.009253      0.02994: 100% 257/257 [05:51<00:00,  1.37s/it]
+Epoch: [5/300]	 lr: 0.00048347	 Train Loss 0.0383
+100% 192/192 [09:30<00:00,  2.97s/it]
+Driving area Segment: Acc(0.985)    IOU (0.968)    mIOU(0.970)  Val_Loss(0.050)
+Driving area Segment OFFNET metrics: Acc(0.985)    Precision (0.983)    Recall(0.983)    F1(0.983)    IoU[0](0.972) IoU[1](0.967)
+Learning rate: 0.0004802
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        6/299      0.01666     0.007717      0.02438: 100% 257/257 [05:54<00:00,  1.38s/it]
+Epoch: [6/300]	 lr: 0.0004802	 Train Loss 0.0299
+100% 192/192 [09:39<00:00,  3.02s/it]
+Driving area Segment: Acc(0.984)    IOU (0.966)    mIOU(0.968)  Val_Loss(0.045)
+Driving area Segment OFFNET metrics: Acc(0.984)    Precision (0.982)    Recall(0.983)    F1(0.983)    IoU[0](0.970) IoU[1](0.966)
+Learning rate: 0.00047694
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        7/299      0.01338     0.005952      0.01933: 100% 257/257 [05:55<00:00,  1.38s/it]
+Epoch: [7/300]	 lr: 0.00047694	 Train Loss 0.0247
+100% 192/192 [09:58<00:00,  3.12s/it]
+Driving area Segment: Acc(0.983)    IOU (0.965)    mIOU(0.967)  Val_Loss(0.040)
+Driving area Segment OFFNET metrics: Acc(0.983)    Precision (0.981)    Recall(0.983)    F1(0.982)    IoU[0](0.970) IoU[1](0.965)
+Learning rate: 0.00047369
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        8/299      0.01127      0.00593       0.0172: 100% 257/257 [05:56<00:00,  1.39s/it]
+Epoch: [8/300]	 lr: 0.00047369	 Train Loss 0.0207
+100% 192/192 [09:32<00:00,  2.98s/it]
+Driving area Segment: Acc(0.957)    IOU (0.908)    mIOU(0.916)  Val_Loss(0.081)
+Driving area Segment OFFNET metrics: Acc(0.957)    Precision (0.991)    Recall(0.915)    F1(0.952)    IoU[0](0.925) IoU[1](0.908)
+Learning rate: 0.00047045
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+        9/299     0.009446     0.004764      0.01421: 100% 257/257 [05:55<00:00,  1.38s/it]
+Epoch: [9/300]	 lr: 0.00047045	 Train Loss 0.0186
+100% 192/192 [09:43<00:00,  3.04s/it]
+Driving area Segment: Acc(0.984)    IOU (0.966)    mIOU(0.968)  Val_Loss(0.035)
+Driving area Segment OFFNET metrics: Acc(0.984)    Precision (0.979)    Recall(0.986)    F1(0.982)    IoU[0](0.970) IoU[1](0.965)
+Learning rate: 0.00046722
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+       10/299     0.007872     0.003989      0.01186: 100% 257/257 [05:50<00:00,  1.36s/it]
+Epoch: [10/300]	 lr: 0.00046722	 Train Loss 0.0160
+100% 192/192 [09:32<00:00,  2.98s/it]
+Driving area Segment: Acc(0.984)    IOU (0.966)    mIOU(0.969)  Val_Loss(0.032)
+Driving area Segment OFFNET metrics: Acc(0.984)    Precision (0.982)    Recall(0.984)    F1(0.983)    IoU[0](0.971) IoU[1](0.966)
+Learning rate: 0.00046401
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+       11/299     0.006767     0.003916      0.01068: 100% 257/257 [05:46<00:00,  1.35s/it]
+Epoch: [11/300]	 lr: 0.00046401	 Train Loss 0.0148
+100% 192/192 [09:27<00:00,  2.96s/it]
+Driving area Segment: Acc(0.979)    IOU (0.955)    mIOU(0.958)  Val_Loss(0.038)
+Driving area Segment OFFNET metrics: Acc(0.979)    Precision (0.968)    Recall(0.987)    F1(0.977)    IoU[0](0.961) IoU[1](0.956)
+Learning rate: 0.0004608
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+       12/299     0.005755     0.003023     0.008779: 100% 257/257 [05:51<00:00,  1.37s/it]
+Epoch: [12/300]	 lr: 0.0004608	 Train Loss 0.0132
+100% 192/192 [09:41<00:00,  3.03s/it]
+Driving area Segment: Acc(0.984)    IOU (0.967)    mIOU(0.969)  Val_Loss(0.029)
+Driving area Segment OFFNET metrics: Acc(0.984)    Precision (0.982)    Recall(0.984)    F1(0.983)    IoU[0](0.971) IoU[1](0.966)
+Learning rate: 0.00045761
+
+        Epoch  TverskyLoss    FocalLoss    TotalLoss
+       13/299       0.0053     0.003211      0.00851: 100% 257/257 [05:52<00:00,  1.37s/it]
+Epoch: [13/300]	 lr: 0.00045761	 Train Loss 0.0122
+100% 192/192 [12:43<00:00,  3.98s/it]
+Driving area Segment: Acc(0.984)    IOU (0.967)    mIOU(0.969)  Val_Loss(0.028)
+Driving area Segment OFFNET metrics: Acc(0.984)    Precision (0.982)    Recall(0.984)    F1(0.983)    IoU[0](0.971) IoU[1](0.967)
+Early stopping triggered. No improvement for 10 epochs.
+Training completed. Best mIOU: 0.9677

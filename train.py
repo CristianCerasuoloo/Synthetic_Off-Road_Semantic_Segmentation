@@ -71,16 +71,30 @@ def train_net(args):
         if args.encoder_pretrained_rgb:
             print(f"Loading pretrained rgb encoder from {args.encoder_pretrained_rgb}")
             model.encoder.load_state_dict(torch.load(args.encoder_pretrained_rgb))
-            if args.freeze_encoder:
-                print("Freezing the encoder")
-                for param in model.encoder.parameters():
-                    param.requires_grad = False
-    
+        
+        if args.freeze_encoder:
+            print("Freezing the encoder")
+            for param in model.encoder.parameters():
+                param.requires_grad = False
+        else:
+            print("Traning also the encoder")
+
+
     if args.pretrained:
         print(f"Loading pretrained model from {args.pretrained}")
         model_path = args.pretrained
         checkpoint = torch.load(model_path)
         model.load_state_dict(checkpoint)
+
+        if args.freeze_encoder:
+            print("Freezing the encoder")
+            for param in model.encoder.parameters():
+                param.requires_grad = False
+        else:
+            print("Traning also the encoder")
+            for param in model.encoder.parameters():
+                param.requires_grad = True
+
     else:
         print("Training from scratch.")
 
