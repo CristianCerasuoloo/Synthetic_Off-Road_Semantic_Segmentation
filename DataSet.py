@@ -450,9 +450,9 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
                     scale=0.25,
                     shear=0.0,
                     sensor_fusion=False,
-                    depth=self.depth
+                    depth= False#self.depth
                 )
-            if not self.depth:
+            if True:#not self.depth:
                 if random.random() < 0.5:
                     augment_hsv(image)
             
@@ -479,4 +479,25 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
         return image_name,torch.from_numpy(image),seg_da
     
 
+if __name__ == "__main__":
+    # Read an image and apply the augmentation
+    color = cv2.imread("/Users/cristiancerasuolo/Desktop/SynthOffRoad/Train/images/FL1_2/000002.png")
+    label = cv2.imread("/Users/cristiancerasuolo/Desktop/SynthOffRoad/Train/GT/FL1_2/000002.png")
 
+    combination = (color, label)
+    (color, label) = random_perspective(
+        combination=combination,
+        degrees=10,
+        translate=0.1,
+        scale=0.25,
+        shear=0.0,
+        sensor_fusion=False,
+        depth=False
+    )
+
+    augment_hsv(color)
+
+    cv2.imshow("Color", color)
+    cv2.waitKey(0)
+    cv2.imshow("Label", label)
+    cv2.waitKey(0)
