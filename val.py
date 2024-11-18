@@ -60,7 +60,7 @@ def validation(args):
             checkpoint2["module."+key] = checkpoint[key]
     #save pretrained model without lane detection
     
-    model.load_state_dict(checkpoint)
+    model.load_state_dict(checkpoint2)
     model.eval()
     
     
