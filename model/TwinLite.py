@@ -399,6 +399,7 @@ class ESPNet_Encoder(nn.Module):
         output0_cat = self.b1(torch.cat([output0, inp1], 1))
         output1_0 = self.level2_0(output0_cat) # down-sampled
         
+        output1 = torch.tensor([])
         for i, layer in enumerate(self.level2):
             if i==0:
                 output1 = layer(output1_0)
@@ -407,6 +408,8 @@ class ESPNet_Encoder(nn.Module):
 
         output1_cat = self.b2(torch.cat([output1,  output1_0, inp2], 1))
         output2_0 = self.level3_0(output1_cat) # down-sampled
+
+        output2 = torch.tensor([])
         for i, layer in enumerate(self.level3):
             if i==0:
                 output2 = layer(output2_0)
@@ -545,3 +548,18 @@ class TwinLiteNet_RGBD_Adaptive(nn.Module):
         out = self.classifier_1(up_2)
         
         return out
+    
+if __name__ == "__main__":
+
+    # Crea il modello
+    model = TwinLiteNet()  # Inizializza il tuo modello (passa eventuali argomenti necessari)
+    
+    # Carica i pesi allenati (se esistono)
+    model.load_state_dict(torch.load("/Users/cristiancerasuolo/Desktop/Repositories/Synthetic_Off-Road_Semantic_Segmentation/pretrained/orfd_trained_model.pth", map_location=torch.device("cpu")))
+    model.eval()
+
+    # Esporta il modello in formato TorchScript
+    scripted_model = torch.jit.script(model)
+    scripted_model.save("TwinLite_model.pt")
+
+    print("Modello esportato correttamente in TorchScript!")
