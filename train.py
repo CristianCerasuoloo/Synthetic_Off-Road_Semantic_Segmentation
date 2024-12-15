@@ -1,5 +1,3 @@
-
-
 import os
 import torch
 import pickle
@@ -58,6 +56,14 @@ def train_net(args):
     elif args.depth:
         print("Using only depth")
         model = net.TwinLiteNet()
+        # for layer in model.modules():
+        #     if isinstance(layer, torch.nn.BatchNorm2d):
+        #         layer.momentum = 0.025
+
+        # for layer in model.modules():
+        #     if isinstance(layer, torch.nn.BatchNorm2d):
+        #         assert layer.momentum == 0.01
+
         if args.encoder_pretrained_depth:
             print(f"Loading pretrained depth encoder from {args.encoder_pretrained_depth}")
             model.encoder.load_state_dict(torch.load(args.encoder_pretrained_depth))
@@ -107,14 +113,16 @@ def train_net(args):
                                 rgb_folder_name=args.rgb_folder_name,
                                 label_folder_name=args.label_folder_name,
                                 width=args.width, height=args.height,
-                                with_augmentation=args.with_augmentation, deepscene=args.deepscene), 
+                                with_augmentation=args.with_augmentation, deepscene=args.deepscene, 
+                                loading_percentage=args.perc), 
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True)
 
     valLoader = torch.utils.data.DataLoader(
         myDataLoader.SynthOffRoadDataset(valid_path = args.valid_path, valid=True,
                                 rgb_folder_name=args.rgb_folder_name,
                                 label_folder_name=args.label_folder_name,
-                                width=args.width, height=args.height, deepscene=args.deepscene),
+                                width=args.width, height=args.height, deepscene=args.deepscene,
+                                loading_percentage=args.perc),
         batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
     if cuda_available:
@@ -250,6 +258,7 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained', help='Pretrained ESPNetv2 weights.')
     parser.add_argument('--train_path', required=True, help='Path to the training dataset')
     parser.add_argument('--valid_path', required=True, help='Path to the validation dataset')
+    parser.add_argument('--perc', type=float, default=1, help='Percentage of data to use')
     # parser.add_argument('--label', default="BDD100K", help='select the label type to use')
     parser.add_argument('--label', default="SynthOffRoad", help='select the label type to use') # Useless
     # parser.add_argument('--sensor_fusion', default=0, help='Enable sensor fusion') # Useless
