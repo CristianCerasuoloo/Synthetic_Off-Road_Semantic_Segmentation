@@ -306,6 +306,13 @@ def val(val_loader, model, criterion, device):
         _, da_predict = torch.max(out_da, 1)
         _, da_gt = torch.max(target_da, 1)
 
+        # binary_images = da_predict.cpu().numpy().astype(np.uint8) * 255
+
+        # for binary_image in binary_images:
+        #     if np.average(binary_image) == 255:
+        #         print("All white")
+        #         exit()
+
         conf_mat += confusion_matrix(da_gt.cpu().numpy(), da_predict.cpu().numpy(), 2)
         DA.reset()
         DA.addBatch(da_predict.cpu(), da_gt.cpu())

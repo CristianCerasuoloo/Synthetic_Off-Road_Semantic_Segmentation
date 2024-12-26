@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 from utils import train, val, netParams, save_checkpoint, \
     poly_lr_scheduler, val_sensor_fusion, train_sensor_fusion
 import torch.optim.lr_scheduler
-
+import numpy as np
 from loss import TotalLoss
 
 def train_net(args):
@@ -56,13 +56,6 @@ def train_net(args):
     elif args.depth:
         print("Using only depth")
         model = net.TwinLiteNet()
-        # for layer in model.modules():
-        #     if isinstance(layer, torch.nn.BatchNorm2d):
-        #         layer.momentum = 0.025
-
-        # for layer in model.modules():
-        #     if isinstance(layer, torch.nn.BatchNorm2d):
-        #         assert layer.momentum == 0.01
 
         if args.encoder_pretrained_depth:
             print(f"Loading pretrained depth encoder from {args.encoder_pretrained_depth}")
@@ -81,6 +74,14 @@ def train_net(args):
                 print("Freezing the encoder")
                 for param in model.encoder.parameters():
                     param.requires_grad = False
+
+        # for layer in model.modules():
+        #     if isinstance(layer, torch.nn.BatchNorm2d):
+        #         layer.momentum = 0.0
+
+        # for layer in model.modules():
+        #     if isinstance(layer, torch.nn.BatchNorm2d):
+        #         assert layer.momentum == 0.0
                     
     if args.pretrained:
         print(f"Loading pretrained model from {args.pretrained}")
@@ -168,6 +169,7 @@ def train_net(args):
 
 
     best_miou = 0
+    best_val_loss = np.inf
     patience = args.patience
     counter = 0
     # best_model_path = os.path.join(args.savedir, 'best_model.pth')
@@ -214,18 +216,22 @@ def train_net(args):
 
 
         # Check if this is the best model
-        if current_iou_tru_class > best_miou:
-            best_miou = current_iou_tru_class
+        # if current_iou_tru_class > best_miou:
+        if val_loss < best_val_loss:
+            # best_miou = current_iou_tru_class
+            best_val_loss = val_loss
             counter = 0
             torch.save(model.state_dict(), os.path.join(args.savedir, f'best_model_e{epoch}.pth'))
-            print(f"New best model saved with mIOU: {best_miou:.4f}")
+            # print(f"New best model saved with mIOU: {best_miou:.4f}")
+            print(f"New best model saved with val_loss: {best_val_loss:.4f}")
 
             save_checkpoint({
                 'epoch': epoch + 1,
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
                 'lr': lr,
-                'best_miou': best_miou
+                # 'best_miou': best_miou
+                'best_val_loss': best_val_loss
             }, os.path.join(args.savedir, f'best_checkpoint_e{epoch}.pth'))
 
         else:
@@ -235,7 +241,8 @@ def train_net(args):
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
                 'lr': lr,
-                'best_miou': best_miou
+                # 'best_miou': best_miou
+                'best_val_loss': best_val_loss
             }, os.path.join(args.savedir,'last_checkpoint.pth.tar'))
             counter += 1
 
