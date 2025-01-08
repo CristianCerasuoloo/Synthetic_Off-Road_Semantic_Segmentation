@@ -250,6 +250,7 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained', help='Pretrained ESPNetv2 weights.')
     parser.add_argument('--train_path', required=True, help='Path to the training dataset')
     parser.add_argument('--valid_path', required=True, help='Path to the validation dataset')
+    parser.add_argument('--perc', type=float, default=1, help='Percentage of dataset to load')
     # parser.add_argument('--label', default="BDD100K", help='select the label type to use')
     parser.add_argument('--label', default="SynthOffRoad", help='select the label type to use') # Useless
     # parser.add_argument('--sensor_fusion', default=0, help='Enable sensor fusion') # Useless

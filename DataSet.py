@@ -372,7 +372,7 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
     '''
     def __init__(self,train_path = None, valid_path = None, test_path= None, rgb_folder_name = "images",\
                 label_folder_name = "GT", transform=None,valid=False, test=False, \
-                    width=640, height=360, with_augmentation = False, deepscene = False):
+                    width=640, height=360, with_augmentation = False, deepscene = False, loading_percentage = 1.0):
         """
         Args:
             train_path (str): Path to the training dataset.
@@ -384,6 +384,7 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
             valid (bool): Flag to indicate validation mode.
             test (bool): Flag to indicate test mode.
             label (str): Type of label processing to use.
+            loading_percentage (float): Percentage of frames to load.
         """
         self.width = width
         self.height = height
@@ -398,6 +399,7 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
         self.label_folder_name = label_folder_name
         self.with_augmentation = with_augmentation
         self.deepscene = deepscene
+        self.loading_percentage = loading_percentage
         if test:
             if self.test_path is None:
                 raise ValueError("Test path not provided.")
@@ -415,8 +417,11 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
         self.frames = []
         for folder in os.listdir(self.root):
             folder_path = os.path.join(self.root, folder)
-            self.frames.extend([os.path.join(folder_path, file) for file in os.listdir(folder_path)])
-        
+            available_frames = [os.path.join(folder_path, file) for file in os.listdir(folder_path)]
+
+            # Calculate the number of frame to load wrt the loading percentage
+            num_frames = int(len(available_frames) * self.loading_percentage)        
+            self.frames.extend(available_frames[:num_frames])
         # # Shuffle the frames
         # random.shuffle(self.frames)
 
@@ -468,6 +473,7 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
 
         seg1 = self.Tensor(seg1)
         seg_b1 = self.Tensor(seg_b1)
+        print(seg1.shape)
         seg_da = torch.stack((seg_b1[0], seg1[0]),0)
 
         image = image[:, :, ::-1].transpose(2, 0, 1)
@@ -480,24 +486,9 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
     
 
 if __name__ == "__main__":
-    # Read an image and apply the augmentation
-    color = cv2.imread("/Users/cristiancerasuolo/Desktop/SynthOffRoad/Train/images/FL1_2/000002.png")
-    label = cv2.imread("/Users/cristiancerasuolo/Desktop/SynthOffRoad/Train/GT/FL1_2/000002.png")
-
-    combination = (color, label)
-    (color, label) = random_perspective(
-        combination=combination,
-        degrees=10,
-        translate=0.1,
-        scale=0.25,
-        shear=0.0,
-        sensor_fusion=False,
-        depth=False
-    )
-
-    augment_hsv(color)
-
-    cv2.imshow("Color", color)
-    cv2.waitKey(0)
-    cv2.imshow("Label", label)
-    cv2.waitKey(0)
+    train_ds = SynthOffRoadDataset(
+        train_path = "../SynthOffRoad/Images/Train",
+        rgb_folder_name = "Images",
+        label_folder_name = "GT", loading_percentage=  0.5)
+    
+    train_ds[0]
