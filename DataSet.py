@@ -372,7 +372,8 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
     '''
     def __init__(self,train_path = None, valid_path = None, test_path= None, rgb_folder_name = "images",\
                 label_folder_name = "GT", transform=None,valid=False, test=False, \
-                    width=640, height=360, with_augmentation = False, deepscene = False, loading_percentage = 1.0):
+                    width=640, height=360, with_augmentation = False, deepscene = False,
+                    loading_percentage = 1):
         """
         Args:
             train_path (str): Path to the training dataset.
@@ -384,7 +385,7 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
             valid (bool): Flag to indicate validation mode.
             test (bool): Flag to indicate test mode.
             label (str): Type of label processing to use.
-            loading_percentage (float): Percentage of frames to load.
+            loading_percentage (float): Percentage of the dataset to load.
         """
         self.width = width
         self.height = height
@@ -398,8 +399,11 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
         self.rgb_folder_name = rgb_folder_name
         self.label_folder_name = label_folder_name
         self.with_augmentation = with_augmentation
-        self.deepscene = deepscene
+        self.deepscene = deepscene, 
         self.loading_percentage = loading_percentage
+        self.mean = [0.6092, 0.6215, 0.5922]
+        self.std = [0.1315, 0.1813, 0.2539]
+
         if test:
             if self.test_path is None:
                 raise ValueError("Test path not provided.")
@@ -420,8 +424,9 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
             available_frames = [os.path.join(folder_path, file) for file in os.listdir(folder_path)]
 
             # Calculate the number of frame to load wrt the loading percentage
-            num_frames = int(len(available_frames) * self.loading_percentage)        
+            num_frames = int(len(available_frames) * self.loading_percentage)
             self.frames.extend(available_frames[:num_frames])
+        
         # # Shuffle the frames
         # random.shuffle(self.frames)
 
@@ -467,10 +472,10 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
         
         label1 = cv2.resize(label1, (self.width, self.height))
         image = cv2.resize(image, (self.width, self.height))
-
-        _,seg_b1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY_INV)
-        _,seg1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY)
-
+ 
+        _,seg_b1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY_INV) # Less than 1 is 255 (white)
+        _,seg1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY) # Greater than 1 is 255 (white)
+ 
         seg1 = self.Tensor(seg1)
         seg_b1 = self.Tensor(seg_b1)
         print(seg1.shape)
@@ -480,15 +485,41 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
         #normalize image
         image = image.astype(np.float32)
         image = image / 255.0
+        
+        # NEW CODE
+        #image = image.astype(np.float32) / 255.0
+        #mage = (image - np.array(self.mean).reshape(3, 1, 1)) / np.array(self.std).reshape(3, 1, 1)
+
         image = np.ascontiguousarray(image)# 8bit, 0-255
 
         return image_name,torch.from_numpy(image),seg_da
     
 
 if __name__ == "__main__":
+    from tqdm import tqdm
     train_ds = SynthOffRoadDataset(
         train_path = "../SynthOffRoad/Images/Train",
         rgb_folder_name = "Images",
         label_folder_name = "GT", loading_percentage=  0.5)
-    
+
     train_ds[0]
+
+    # all_images = []
+
+    # for i in tqdm(range(len(train_ds))):
+    #     image_name, image, label = train_ds[i]
+    #     all_images.append(image)
+
+    # all_images = torch.stack(all_images)
+
+    # all_images = all_images.float()  # Assicurati che sia float32
+    # mean = all_images.mean(dim=[0, 2, 3])  # Media sui batch, altezza, larghezza
+    # std = all_images.std(dim=[0, 2, 3])    # Deviazione standard sui batch, altezza, larghezza
+
+    # print("Mean per canale (RGB):", mean)
+    # print("Std per canale (RGB):", std)
+
+# DEBUG:  lunghezza frames  32880
+# 100%|███████████████████████████████████████████████████████████████████████| 32880/32880 [19:22<00:00, 28.27it/s]
+# Mean per canale (RGB): tensor([0.6092, 0.6215, 0.5922])
+# Std per canale (RGB): tensor([0.1315, 0.1813, 0.2539])
