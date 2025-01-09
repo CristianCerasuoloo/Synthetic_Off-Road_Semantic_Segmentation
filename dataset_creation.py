@@ -80,11 +80,11 @@ def invert_grayscale_video(input_path, output_path):
 if __name__ == "__main__":
 
     # Step 1: Estrazione Frame
-    video_folder = "/Users/cristiancerasuolo/Desktop/Bozza5"
+    video_folder = "/user/ccerasuolo/workspace/Bozza5"
     video_rgb_folder = video_folder + "/RGB"
     video_gt_folder = video_folder + "/GT"
 
-    frame_folder = "/Users/cristiancerasuolo/Desktop/SynthOffRoad"
+    frame_folder = "/user/ccerasuolo/workspace/SynthOffRoad"
     frame_images_folder = frame_folder + "/Images"
     frame_gt_folder = frame_folder + "/GT"
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
         if not os.path.exists(frame_path):
             pass
-            unpack_video(video_path, frame_path, perc_frames = 0.01)
+            unpack_video(video_path, frame_path, perc_frames = 1)
         else:
             print("Skipping " + video_path + " Folder already exists")
 
