@@ -478,7 +478,6 @@ class SynthOffRoadDataset(torch.utils.data.Dataset):
  
         seg1 = self.Tensor(seg1)
         seg_b1 = self.Tensor(seg_b1)
-        print(seg1.shape)
         seg_da = torch.stack((seg_b1[0], seg1[0]),0)
 
         image = image[:, :, ::-1].transpose(2, 0, 1)
